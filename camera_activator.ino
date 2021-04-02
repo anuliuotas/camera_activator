@@ -6,12 +6,19 @@ const int PHOTOCOUPLER_PIN = 4;
 const int POTENTIOMETER_LOWER_BOUND = 600;
 const int POTENTIOMETER_UPPER_BOUND = 1024;
 
+const int GREEN_LED_PIN = 7;
+const int BLUE_LED_PIN = 9;
+
 void setup() {
    Serial.begin(9600); // open the serial port at 9600 bps:
 
    pinMode(PHOTOCOUPLER_PIN, OUTPUT);
    pinMode(POTENTIOMETER_PIN, INPUT);
    pinMode(PHOTORESISTOR_PIN, INPUT);
+   pinMode(GREEN_LED_PIN, OUTPUT);
+   pinMode(BLUE_LED_PIN, OUTPUT);
+
+   digitalWrite(GREEN_LED_PIN, HIGH);
 }
 
 int state = 0;
@@ -34,6 +41,12 @@ void loop() {
     state = 0;
   }
 
+  if (state == 1) {
+    digitalWrite(BLUE_LED_PIN, HIGH);
+  } else {
+    digitalWrite(BLUE_LED_PIN, LOW);
+  }
+
   // If state changed to 1 and photo is not being taken initiate process
   if (previousState == 0 && state == 1 && photoInitiated == -1) {
     photoInitiated = millis();
@@ -41,12 +54,12 @@ void loop() {
 
   if (photoInitiated != -1) {
     // Complete the process after fixed duration and reset the timer
-    if (millis() - photoInitiated > 1000) {
+    if (millis() - photoInitiated > 3000) {
         photoInitiated = -1;
     }
   
     // Connect octocoupler for fixed duration at the start of the process
-    if (millis() - photoInitiated < 800) {
+    if (millis() - photoInitiated < 1000) {
       digitalWrite(LED_BUILTIN, HIGH);
       digitalWrite(PHOTOCOUPLER_PIN, HIGH);
     } else {
